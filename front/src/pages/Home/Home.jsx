@@ -11,10 +11,16 @@ const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log('isL ', ctx.islogin);
     if (ctx.islogin == false) {
-      navigate("/login");
+     return  navigate("/login");
     }
-  });
+  
+  }    );
+
+  useEffect(() => {
+   ctx.getUserNotes() 
+  },[]);
 
  if(ctx.islogin == true)
     return (

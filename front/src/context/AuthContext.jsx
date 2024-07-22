@@ -1,6 +1,7 @@
 import axios from "axios";
 import { createContext, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { getToken } from "../utilis";
 
 // create context
 export const AuthContext = createContext(null);
@@ -11,6 +12,7 @@ export const AuthProvider = ({ children }) => {
   const [islogin, setIslogin] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [Notes, setNotes] = useState([]);
   const navigate = useNavigate();
 
   //login user
@@ -27,6 +29,9 @@ export const AuthProvider = ({ children }) => {
     } else if (res.data.error == false) {
       console.log("error false");
       setLoading(false);
+
+      localStorage.setItem("accessToken", res.data.accessToken);
+
       setIslogin(true);
       navigate("/");
       
@@ -35,13 +40,42 @@ export const AuthProvider = ({ children }) => {
 
   //getting users notes
 
-  const  getUserNotes = async()=>{
-   const token = getToken()
-   if(token) 
-  }
+  const getUserNotes = async () => {
+    const token = getToken();
+    if (token) {
+        const res = await axios.get("http://localhost:3002/notes/me", {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if(res.data.errors == true) {
+            setError(res.data.message)
+        } else {
+            setNotes(res.data.Notes);
+        }
+
+        console.log(res);
+
+    } else {
+        navigate('/login');
+    }
+
+}
+
+
+const logout =  () => {
+  //localStorage.removeItem("accessToken");
+  console.log('isL1 ', islogin);
+  setIslogin(false);
+  console.log('isL2 ', islogin);
+
+}
+
+
   return (
     <AuthContext.Provider
-      value={{ islogin, setIslogin, loading, loginUser, error }}
+      value={{ islogin, setIslogin, logout, loading, Notes , loginUser, error, getUserNotes }}
     >
       {children}
     </AuthContext.Provider>

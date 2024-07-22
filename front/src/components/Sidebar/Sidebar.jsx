@@ -1,8 +1,14 @@
-import React from 'react'
-import { Link } from "react-router-dom";
-import {House, Bell, SmilePlus, PencilLine, Trash, Pin} from "lucide-react";
+import React, { useContext } from 'react'
+import { Link, useNavigate } from "react-router-dom";
+import {House, Bell,  PencilLine, LogOut, Pin} from "lucide-react";
+import { AuthContext } from '../../context/AuthContext';
 
 const Sidebar = () => {
+ const ctx = useContext(AuthContext)
+const navigate = useNavigate();
+
+ 
+
   return (
     <div className='sidebar'>
       <div className='sidebar-logo'>
@@ -31,7 +37,7 @@ const Sidebar = () => {
         </li>
         <li>
           <Link className='sidebar-link' to='/'>
-            <Trash size={22} color='black' />
+          <LogOut size={22} color='black' onClick={ () => ctx.logout()} />
           </Link>
         </li>
       </ul>

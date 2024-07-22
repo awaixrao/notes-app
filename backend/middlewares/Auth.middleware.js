@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const AuthCheck = async( req, res, next) =>{
 
     try {
-       // console.log(req.headers);
+       console.log(req.headers);
 
         const token = req.headers.authorization.split(" ")[1];
 

@@ -66,7 +66,7 @@ app.post("/user/login", async (req, res) => {
 
   const isPassCorrect = await bcrypt.compare(password, isUser.password);
   if (isPassCorrect == false)
-    return res.status(400).json({
+    return res.status(200).json({
       error: true,
       message: "incorrect email or password",
     });
