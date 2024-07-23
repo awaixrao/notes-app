@@ -1,7 +1,7 @@
 import axios from "axios";
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getToken } from "../utilis";
+import { getToken, removeToken } from "../utilis";
 
 // create context
 export const AuthContext = createContext(null);
@@ -65,13 +65,38 @@ export const AuthProvider = ({ children }) => {
 
 
 const logout =  () => {
-  //localStorage.removeItem("accessToken");
-  console.log('isL1 ', islogin);
+ removeToken()
+
   setIslogin(false);
-  console.log('isL2 ', islogin);
+
 
 }
-
+useEffect (() =>{
+  const verifyToken = async() => {
+    const token = getToken();
+    if(token){
+      try {
+        const res = await axios.post("http://localhost:3002/user/verify",{token: token});
+        if(res.data.error == false){
+          setIslogin(true);
+          navigate('/')
+        }
+        
+        
+      } catch (error) {
+        removeToken();
+        setIslogin(false);
+        navigate("/login")
+        
+      }
+    }
+    else{
+      setIslogin(false);
+      navigate("/login")
+    }
+  }
+  verifyToken();
+},[])
 
   return (
     <AuthContext.Provider

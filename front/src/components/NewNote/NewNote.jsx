@@ -11,9 +11,7 @@ const NewNote = () => {
 
 
 
-  const showModal = () => {
-    setOpen(true);
-  };
+ 
 
   const handleOk = () => {
     setModalText('The modal will be closed after two seconds');
@@ -42,7 +40,6 @@ const NewNote = () => {
       >
 
         <NoteForm setOpen={setOpen} />
-      <button onClick={ () => setOpen(false)}> close me </button>
       </Modal>
       <div className="newNoteBtn" onClick={() => setOpen(true)}>
         <Plus color="red" size={26} />

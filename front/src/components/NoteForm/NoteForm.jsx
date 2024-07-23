@@ -1,23 +1,60 @@
-import { Button, Checkbox, Form, Input, Modal } from 'antd';
-import {httpClient} from '../../lib/httpClient';
-import { useState } from 'react';
+import { Button, Form, Input, Modal, notification, Space } from 'antd';
+// import {httpClient} from '../../lib/httpClient';
+import { useContext, useEffect, useState } from 'react';
+import { AuthContext } from '../../context/AuthContext';
+import { getToken } from '../../utilis';
+import axios from 'axios';
 const { TextArea } = Input;
 
 
 const NoteForm = (props) => {
     const [loading, setLoading] = useState(false);
+    const accessToken = getToken();
+    const [api, contextHolder] = notification.useNotification();
+    const ctx = useContext(AuthContext);
 
 
-    const onFinish = (values) => {
-        console.log('Success:', values);
-        setLoading(true);
-        httpClient.post("/new-note", values).then( (res) => {
-            console.log("res");
-            
-        }).catch( () => {
-
-        }).finally( () => {setLoading(false); props.setOpen(false); })
+    // success notification
+    const openNotificationWithIcon = (type) => {
+        api[type]({
+            message: 'Note Created',
+            description:
+                'Note created successfully.',
+        });
     };
+
+const onFinish = (values)=>{
+    console.log("Success:", values );
+setLoading(true)
+    axios.post("http://localhost:3002/notes/create", values, {
+        headers: {
+            "Authorization": `Bearer ${accessToken}`
+        }
+    }).then((res) => {
+        if(res.data.errors == false) {
+            openNotificationWithIcon('success');
+            setTimeout( () => {
+                props.setOpen(false);
+                ctx.getUserNotes();
+            }, 5000)
+        } else if(res.data.errors){
+            alert("not created")
+        }
+
+        // 
+
+    }).catch((err) => {
+        if(err.response.status == 400) {
+            ctx.logout();
+        } 
+
+
+    }).finally(() => {
+        setLoading(false);
+        //props.setOpen(false);
+    })
+}
+
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
     };
@@ -25,6 +62,7 @@ const NoteForm = (props) => {
 
     return (
         <div>
+            {contextHolder}
             <Form
                 name="basic"
                 labelCol={{
@@ -57,16 +95,18 @@ const NoteForm = (props) => {
                 </Form.Item>
 
                 <Form.Item
-                    label="Description"
-                    name="description"
+                    label="Note body"
+                    name="content"
                     rules={[
                         {
                             required: true,
-                            message: 'Description is required!',
+                            message: 'content is required!',
                         },
                     ]}
                 >
-                    <TextArea rows={4} placeholder="maxLength is 6" maxLength={6} />
+                    <TextArea rows={4} placeholder="write your note"/>
+
+                    
                 </Form.Item>
 
                 <Form.Item

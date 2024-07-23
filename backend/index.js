@@ -74,7 +74,7 @@ app.post("/user/login", async (req, res) => {
   //jwt
 
   const access_token = await jwt.sign({ userId: isUser._id }, JWT_SECRET, {
-    expiresIn: "2h",
+    expiresIn: "20m",
   });
 
   //sucess response
@@ -214,6 +214,25 @@ app.put("/notes/:id", AuthCheck, async (req, res) => {
     });
   }
 });
+//user token verification
+
+
+app.post("/user/verify", async (req,res)=> {
+  try {
+    const token = req.body.token
+    await jwt.verify(token, JWT_SECRET)
+    res.status(200).json({
+      error:false
+    })
+    
+  } catch (error) {
+    res.status(400).json({
+      error:true
+    })
+
+    
+  }
+})
 
 mongoose
   .connect("mongodb://127.0.0.1:27017/NotesDb")
