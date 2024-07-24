@@ -10,7 +10,7 @@ const Notes = () => {
             <div className='notes-cards'>
                 {
                   ctx.Notes.length > 0 &&  ctx.Notes.map((note, index) => {
-                        return <NoteCard note={note} />
+                        return <NoteCard note={note} key={note._id}  />
                     })
                 }
             </div>

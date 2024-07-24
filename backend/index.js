@@ -7,9 +7,9 @@ const port = 3002;
 const bcrypt = require("bcrypt");
 const User = require("./models/User.model");
 const Notes = require("./models/Note.model");
-const JWT_SECRET =
-  "asdfa8765@@@vmnxclvnb?{:{P>l,;l.ol3r2p9y29$%%^^78p34yh;igdsitdsaydsa6wq87436s.';.l;kdfn;k;[xncvkabnsvlkbzxclk";
 const saltRounds = 10;
+require('dotenv').config()
+console.log(process.env)  
 const AuthCheck = require("./middlewares/Auth.middleware.js");
 
 app.use(express.json());
@@ -73,7 +73,7 @@ app.post("/user/login", async (req, res) => {
 
   //jwt
 
-  const access_token = await jwt.sign({ userId: isUser._id }, JWT_SECRET, {
+  const access_token = await jwt.sign({ userId: isUser._id }, process.env.JWT_SECRET, {
     expiresIn: "20m",
   });
 
@@ -220,7 +220,7 @@ app.put("/notes/:id", AuthCheck, async (req, res) => {
 app.post("/user/verify", async (req,res)=> {
   try {
     const token = req.body.token
-    await jwt.verify(token, JWT_SECRET)
+    await jwt.verify(token, process.env.JWT_SECRET)
     res.status(200).json({
       error:false
     })

@@ -1,4 +1,5 @@
-const JWT_SECRET = "asdfa8765@@@vmnxclvnb?{:{P>l,;l.ol3r2p9y29$%%^^78p34yh;igdsitdsaydsa6wq87436s.';.l;kdfn;k;[xncvkabnsvlkbzxclk";
+require('dotenv').config()
+
 const jwt = require("jsonwebtoken");
 
 
@@ -10,7 +11,7 @@ const AuthCheck = async( req, res, next) =>{
         const token = req.headers.authorization.split(" ")[1];
 
         if(token) {
-            const decoded = await jwt.verify(token, JWT_SECRET);
+            const decoded = await jwt.verify(token, process.env.JWT_SECRET);
             req.body.userId = decoded.userId;
             next();
         }
