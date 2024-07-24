@@ -1,7 +1,7 @@
-import axios from "axios";
 import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getToken, removeToken } from "../utilis";
+import { httpClient } from "../lib/httpClient";
 
 // create context
 export const AuthContext = createContext(null);
@@ -19,13 +19,9 @@ export const AuthProvider = ({ children }) => {
 
   const loginUser = async (credentials) => {
     setLoading(true);
-    const res = await axios.post(
-      "http://localhost:3002/user/login",
-      credentials
-    );
+    const res = await httpClient.post("/user/login", credentials);
     if (res.data.error == true) {
       setError(res.data.message);
-
     } else if (res.data.error == false) {
       console.log("error false");
       setLoading(false);
@@ -34,7 +30,6 @@ export const AuthProvider = ({ children }) => {
 
       setIslogin(true);
       navigate("/");
-      
     }
   };
 
@@ -43,64 +38,65 @@ export const AuthProvider = ({ children }) => {
   const getUserNotes = async () => {
     const token = getToken();
     if (token) {
-        const res = await axios.get("http://localhost:3002/notes/me", {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
+      const res = await httpClient.get("/notes/me");
 
-        if(res.data.errors == true) {
-            setError(res.data.message)
-        } else {
-            setNotes(res.data.Notes);
-        }
-
-        console.log(res);
-
-    } else {
-        navigate('/login');
-    }
-
-}
-
-
-const logout =  () => {
- removeToken()
-
-  setIslogin(false);
-
-
-}
-useEffect (() =>{
-  const verifyToken = async() => {
-    const token = getToken();
-    if(token){
-      try {
-        const res = await axios.post("http://localhost:3002/user/verify",{token: token});
-        if(res.data.error == false){
-          setIslogin(true);
-          navigate('/')
-        }
-        
-        
-      } catch (error) {
-        removeToken();
-        setIslogin(false);
-        navigate("/login")
-        
+      if (res.data.errors == true) {
+        setError(res.data.message);
+      } else {
+        setNotes(res.data.Notes);
       }
+
+      console.log(res);
+    } else {
+      navigate("/login");
     }
-    else{
-      setIslogin(false);
-      navigate("/login")
-    }
-  }
-  verifyToken();
-},[])
+  };
+
+
+
+  const logout = () => {
+    setNotes([]);
+    removeToken();
+    setIslogin(false);
+  };
+
+
+  
+  useEffect(() => {
+    const verifyToken = async () => {
+      const token = getToken();
+      if (token) {
+        try {
+          const res = await httpClient.post("/user/verify", { token: token });
+          if (res.data.error == false) {
+            setIslogin(true);
+            navigate("/");
+          }
+        } catch (error) {
+          removeToken();
+          setIslogin(false);
+          navigate("/login");
+        }
+      } else {
+        setIslogin(false);
+        navigate("/login");
+      }
+    };
+    verifyToken();
+  },[]);
 
   return (
     <AuthContext.Provider
-      value={{ islogin, setIslogin, logout, loading, Notes , loginUser, error, getUserNotes }}
+      value={{
+        islogin,
+        setIslogin,
+        logout,
+        loading,
+        Notes,
+        loginUser,
+        error,
+        getUserNotes,
+      }}
     >
       {children}
     </AuthContext.Provider>

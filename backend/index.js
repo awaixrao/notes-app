@@ -9,7 +9,6 @@ const User = require("./models/User.model");
 const Notes = require("./models/Note.model");
 const saltRounds = 10;
 require('dotenv').config()
-console.log(process.env)  
 const AuthCheck = require("./middlewares/Auth.middleware.js");
 
 app.use(express.json());
