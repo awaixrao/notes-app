@@ -1,9 +1,9 @@
 import React, { useContext } from 'react'
 import { Link, useNavigate } from "react-router-dom";
-import {House, Bell,  PencilLine, LogOut, Pin} from "lucide-react";
+import {House, Bell,  PencilLine, LogOut, Pin, User} from "lucide-react";
 import { AuthContext } from '../../context/AuthContext';
 
-const Sidebar = () => {
+const  Sidebar = () => {
  const ctx = useContext(AuthContext)
 const navigate = useNavigate();
 
@@ -21,8 +21,8 @@ const navigate = useNavigate();
           </Link>
         </li>
         <li>
-          <Link className='sidebar-link' to='/'>
-            <Bell size={22} color='black' />
+          <Link className='sidebar-link' to='/profile'>
+            <User size={22} color='black' />
           </Link>
         </li>
         <li>

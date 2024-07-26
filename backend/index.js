@@ -10,9 +10,28 @@ const Notes = require("./models/Note.model");
 const saltRounds = 10;
 require('dotenv').config()
 const AuthCheck = require("./middlewares/Auth.middleware.js");
-
+const multer  = require('multer')
 app.use(express.json());
+app.use(express.static("uploads"))
 app.use(cors());
+
+
+
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/')
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+    const ext = file.mimetype.split("/")[1];
+    cb(null, file.fieldname + '-' + uniqueSuffix + "." + ext)
+  }
+})
+
+const upload = multer({ storage: storage })
+
+
 
 app.post("/user/register", async (req, res) => {
   try {
@@ -61,6 +80,9 @@ app.post("/user/login", async (req, res) => {
       message: "incorrect email or password",
     });
 
+
+    console.log(isUser);
+    
   //checking pass
 
   const isPassCorrect = await bcrypt.compare(password, isUser.password);
@@ -81,6 +103,7 @@ app.post("/user/login", async (req, res) => {
     error: false,
     message: "you are successfully logged in",
     accessToken: access_token,
+    user : isUser
   });
 });
 
@@ -231,6 +254,37 @@ app.post("/user/verify", async (req,res)=> {
 
     
   }
+})
+
+app.post("/profile/update", [upload.single('image'), AuthCheck], async(req,res)=>{
+try {
+
+  const name = req.body.name
+  const image = req.file.filename
+  const userId = req.body.userId
+ 
+  const updatedUser = await User.findByIdAndUpdate(userId ,{name: name,
+    photo:image
+  }, {new:true})
+
+
+    const userFinal = updatedUser.toObject({getters:true})
+
+// console.log(userFinal);
+// return;
+  return res.status(200).json({
+    error: false,
+    user: userFinal,
+    message: "successfully uploaded"
+  })
+
+} catch (error) {
+  
+  return res.status(400).json({
+    error: true,
+   message: "internal server error"
+  })
+}
 })
 
 mongoose

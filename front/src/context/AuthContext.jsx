@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { getToken, removeToken } from "../utilis";
+import { json, useNavigate } from "react-router-dom";
+import { getToken, getUser,removeUser, removeToken } from "../utilis";
 import { httpClient } from "../lib/httpClient";
 
 // create context
@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [Notes, setNotes] = useState([]);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   //login user
@@ -27,7 +28,8 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
 
       localStorage.setItem("accessToken", res.data.accessToken);
-
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      setUser(res.data.user);
       setIslogin(true);
       navigate("/");
     }
@@ -52,27 +54,29 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-
-
   const logout = () => {
     setNotes([]);
     removeToken();
+    removeUser();
     setIslogin(false);
   };
 
-
-  
   useEffect(() => {
+    const user = getUser();
     const verifyToken = async () => {
       const token = getToken();
       if (token) {
         try {
           const res = await httpClient.post("/user/verify", { token: token });
-          if (res.data.error == false) {
+          if (res.data.error == false) 
+            {
+              setUser(user);
             setIslogin(true);
+            setUser(getUser());
             navigate("/");
           }
         } catch (error) {
+          removeUser()
           removeToken();
           setIslogin(false);
           navigate("/login");
@@ -83,7 +87,7 @@ export const AuthProvider = ({ children }) => {
       }
     };
     verifyToken();
-  },[]);
+  }, []);
 
   return (
     <AuthContext.Provider
@@ -91,10 +95,12 @@ export const AuthProvider = ({ children }) => {
         islogin,
         setIslogin,
         logout,
+        user,
         loading,
         Notes,
         loginUser,
         error,
+        setUser,
         getUserNotes,
       }}
     >

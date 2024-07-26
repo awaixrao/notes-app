@@ -11,18 +11,17 @@ const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log('isL ', ctx.islogin);
+    console.log("isL", ctx.islogin);
     if (ctx.islogin == false) {
-     return  navigate("/login");
+      return navigate("/login");
     }
-  
-  }    );
+  });
 
   useEffect(() => {
-   ctx.getUserNotes() 
-  },[]);
+    ctx.getUserNotes();
+  }, []);
 
- if(ctx.islogin == true)
+  if (ctx.islogin == true)
     return (
       <div className="home">
         <Sidebar />

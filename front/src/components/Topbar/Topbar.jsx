@@ -1,25 +1,30 @@
-import React from 'react'
+import { useContext } from "react";
 
-import {Search} from "lucide-react";
+import { Search } from "lucide-react";
+import { AuthContext } from "../../context/AuthContext";
 
 const Topbar = () => {
+  const ctx = useContext(AuthContext);
+
   return (
-    <div className='topbar'>
-      <div className='user-info'>
-        <div className='photo'>
-          <img src='https://media.licdn.com/dms/image/D4D03AQEE1hNyxCJlHQ/profile-displayphoto-shrink_200_200/0/1699612917132?e=2147483647&v=beta&t=J8jJVTzg0MyHqqk_D95hW4W8Pt_lGnT6EhzFOq-CNVU' />
+    <div className="topbar">
+      <div className="user-info">
+        <div className="photo">
+          {
+        ctx.user?.photo &&  <img src={ctx.user.photo} width="60px" />
+          }
         </div>
-        <div className='info'>
-          <h5>Awais Rao</h5>
+        <div className="info">
+          <h5>{ctx.user?.name}</h5>
           <p>awais@gmail.com</p>
         </div>
       </div>
-      <div className='search-input'>
-        <Search color='#707070' className='searchIcon' />
-        <input type='search' className='search' />
+      <div className="search-input">
+        <Search color="#707070" className="searchIcon" />
+        <input type="search" className="search" />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Topbar
+export default Topbar;

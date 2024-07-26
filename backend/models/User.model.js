@@ -1,4 +1,5 @@
 const  mongoose  = require("mongoose")
+require('dotenv').config();
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -16,7 +17,8 @@ const userSchema = new mongoose.Schema({
 
     photo: {
         type: String,
-        default : "https://media.istockphoto.com/id/1497142422/photo/close-up-photo-portrait-of-young-successful-entrepreneur-businessman-investor-wearing-glasses.jpg?s=1024x1024&w=is&k=20&c=YYtJJGvb4uXz9Ni9coUC8xitkbZFjp9qlwFR61g_koM="
+        default : "",
+        get :  attachServerUrlPhoto
         
     },
 
@@ -32,9 +34,15 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     }
-}, {timestamps: true});
+}, {timestamps: true, toJSON: {getters: true}, toObject: {getters: true}});
+
+function attachServerUrlPhoto(value) {
+    return process.env.SERVER_URL + value;
+}
 
 // model
+
+
 
 const UserModel = mongoose.model("User", userSchema);
 
