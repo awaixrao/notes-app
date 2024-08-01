@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
     photo: {
         type: String,
         default : "",
-        get :  attachServerUrlPhoto
+        // get :  attachServerUrlPhoto
         
     },
 
@@ -36,9 +36,9 @@ const userSchema = new mongoose.Schema({
     }
 }, {timestamps: true, toJSON: {getters: true}, toObject: {getters: true}});
 
-function attachServerUrlPhoto(value) {
-    return process.env.SERVER_URL + value;
-}
+// function attachServerUrlPhoto(value) {
+//     return process.env.SERVER_URL + value;
+// }
 
 // model
 

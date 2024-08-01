@@ -6,7 +6,7 @@ import { getToken } from "../utilis";
 export const  httpClient = axios.create({
   
     baseURL: 'http://localhost:3002',
-    timeout: 1000,
+    timeout: 5000,
   });
 
 httpClient.interceptors.request.use(function(config){

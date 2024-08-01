@@ -6,7 +6,6 @@ const jwt = require("jsonwebtoken");
 const AuthCheck = async( req, res, next) =>{
 
     try {
-       console.log(req.headers);
 
         const token = req.headers.authorization.split(" ")[1];
 
@@ -25,7 +24,6 @@ const AuthCheck = async( req, res, next) =>{
     }
         
         catch (error) {
-            console.log(error.message);
             return res.status(400).json({
                 errors: true,
                 message: "Authorization failed"

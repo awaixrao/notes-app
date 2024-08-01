@@ -202,3 +202,9 @@ Login page
 .profile {
     margin-top: 40px;
 }
+
+.ant-dropdown-menu-title-content a{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}

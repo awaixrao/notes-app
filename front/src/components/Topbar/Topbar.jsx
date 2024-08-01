@@ -16,7 +16,7 @@ const Topbar = () => {
         </div>
         <div className="info">
           <h5>{ctx.user?.name}</h5>
-          <p>awais@gmail.com</p>
+          <p>{ctx.user?.email}</p>
         </div>
       </div>
       <div className="search-input">

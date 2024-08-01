@@ -35,12 +35,36 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+// register user 
+
+
+  const registerUser = async (value) =>{
+    const res = await httpClient.post("/user/register", value);
+    if(res.data.error == true){
+      setError(res.data.message)
+    }
+      else if (res.data.error== false){
+
+        navigate("/login")
+      }
+  }
+
+
+
+
   //getting users notes
 
-  const getUserNotes = async () => {
+  const getUserNotes = async (type = null) => {
     const token = getToken();
+    let url = `/notes/me`;
+
+    if(type !== null) {
+        url += `/${type}`;
+    }
+
+
     if (token) {
-      const res = await httpClient.get("/notes/me");
+           const res = await httpClient.get(url);
 
       if (res.data.errors == true) {
         setError(res.data.message);
@@ -98,6 +122,7 @@ export const AuthProvider = ({ children }) => {
         user,
         loading,
         Notes,
+        registerUser,
         loginUser,
         error,
         setUser,

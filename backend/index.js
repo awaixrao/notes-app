@@ -17,6 +17,19 @@ app.use(cors());
 
 
 
+//cloudinary
+
+const cloudinary = require('cloudinary').v2;
+
+cloudinary.config({
+  cloud_name: 'dlma6bt14',
+  api_key: '859238663167662',
+  api_secret: 'EDSK2d2zxLW2e0kGWXi8xHf8gMg',
+  secure: true,
+});
+
+
+
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -41,7 +54,7 @@ app.post("/user/register", async (req, res) => {
     alreadyRegister = await User.findOne({ email: email });
 
     if (alreadyRegister !== null) {
-      return res.status(400).json({
+      return res.status(401).json({
         errors: true,
         message: "user already registered",
       });
@@ -148,28 +161,35 @@ app.get("/notes", async (req, res) => {
   }
 });
 
-app.get("/notes/me", AuthCheck, async (req, res) => {
+
+
+
+
+app.get("/notes/me/:type?", AuthCheck, async (req, res) => {
   try {
-    const {userId} = req.body;
-    console.log(userId);
-    const objectuserid = new mongoose.Types.ObjectId(userId);
+      const type = req.params.type;
+     
+      const userIdObj = new mongoose.Types.ObjectId(req.body.userId);
+      let query = { userId: userIdObj, isPinned: false, isArchived: false };
 
-    const notes = await Notes.find({
-      userId: objectuserid,
-    });
+      if(type) {
+          query[type] = true;
+      }
 
-    res.status(200).json({
-      error: false,
-      Notes: notes,
-    });
+      const notes = await Notes.find(query);
+
+      
+      return res.json({
+          Notes: notes
+      })
   } catch (error) {
-    console.log(error.message)
-    res.status(500).json({
-      error: true,
-      message: "Internal server error",
-    });
+      console.log(error.message);
   }
 });
+
+
+
+
 
 app.delete("/notes/:id", AuthCheck, async (req, res) => {
   try {
@@ -262,9 +282,12 @@ try {
   const name = req.body.name
   const image = req.file.filename
   const userId = req.body.userId
- 
+
+  const cloudinaryImage = await cloudinary.uploader.upload(req.file.path)
+  console.log(cloudinaryImage);
+  
   const updatedUser = await User.findByIdAndUpdate(userId ,{name: name,
-    photo:image
+    photo:cloudinaryImage.url
   }, {new:true})
 
 
@@ -279,7 +302,7 @@ try {
   })
 
 } catch (error) {
-  
+  console.log(error.message)
   return res.status(400).json({
     error: true,
    message: "internal server error"
@@ -287,11 +310,42 @@ try {
 }
 })
 
+// update inPinned note
+app.put("/notes/pinned/:id", AuthCheck, async (req, res) => {
+  try {
+      const id = req.params.id;
+
+      await Notes.findByIdAndUpdate(id, { isPinned: req.body.isPinned });
+      return res.status(200).json({
+          errors: false,
+          message: "successfully updated"
+      })
+  } catch (error) {
+      console.log(error.message);
+      return res.status(500).json({
+          errors: true
+      })
+  }
+})
+
+
 mongoose
-  .connect("mongodb://127.0.0.1:27017/NotesDb")
+  .connect(process.env.MONGO_DB_URL)
   .then(() => {
+
     app.listen(port, () => {
       console.log(`contacts app listening on port ${port}`);
     });
   })
   .catch((err) => console.log(err.message));
+
+
+
+// mongoose
+//   .connect("mongodb://127.0.0.1:27017/NotesDb")
+//   .then(() => {
+//     app.listen(port, () => {
+//       console.log(`contacts app listening on port ${port}`);
+//     });
+//   })
+//   .catch((err) => console.log(err.message));

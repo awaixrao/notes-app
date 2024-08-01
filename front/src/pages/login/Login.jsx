@@ -1,6 +1,8 @@
 import { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { AuthContext } from "../../context/AuthContext";
+import { Link } from "react-router-dom";
+
 
 const Login = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -53,7 +55,13 @@ const Login = () => {
             </p>
           }
        
-        </form>
+        </form> 
+
+       <Link  className="text-center" to='/register'>
+        <h5 className="text-center">Sign Up</h5>
+          </Link>
+
+
       </div>
     </div>
   )
