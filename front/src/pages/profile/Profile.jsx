@@ -6,6 +6,9 @@ import { httpClient } from "../../lib/httpClient";
 import { AuthContext } from "../../context/AuthContext";
 import { updateUser } from "../../utilis";
 
+
+
+
 const Profile = () => {
   const [image, setImage] = useState(null);
   const ctx = useContext(AuthContext)

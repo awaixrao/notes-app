@@ -1,5 +1,5 @@
 import { Button, Form, Input, Modal, notification, Space } from 'antd';
-// import {httpClient} from '../../lib/httpClient';
+import {httpClient} from '../../lib/httpClient';
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import { getToken } from '../../utilis';
@@ -26,7 +26,7 @@ const NoteForm = (props) => {
 const onFinish = (values)=>{
     console.log("Success:", values );
 setLoading(true)
-    axios.post("http://localhost:3002/notes/create", values, {
+httpClient.post("/notes/create", values, {
         headers: {
             "Authorization": `Bearer ${accessToken}`
         }
